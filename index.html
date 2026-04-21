@@ -6,7 +6,6 @@
 <title>Columbia University – Payroll Detail Report (Training)</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root{
   --columbia:#003087;
   --panel-bg:#fafafa;
@@ -14,7 +13,6 @@
   --active:#d0e8ff;
   --outline:#0056b3;
 }
-
 body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 10px;
@@ -24,7 +22,6 @@ body {
   min-height: 100vh;
   overflow: hidden;
 }
-
 #report-panel {
   flex: 1 1 auto;
   background: #fff;
@@ -34,10 +31,8 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-
 #report-static { flex-shrink: 0; background: #fff; z-index: 10; }
 #table-scroll-area { flex: 1 1 auto; overflow: auto; position: relative; }
-
 .nav-bar {
   background: #fff;
   border-bottom: 1px solid #ccc;
@@ -49,7 +44,6 @@ body {
 .nav-bar a { color: #00419e; text-decoration: none; font-size: 10px; font-weight: bold; white-space: nowrap; }
 .nav-bar a:hover { text-decoration: underline; }
 .nav-fds-wrap { display: flex; flex-direction: column; align-items: center; }
-
 .header-top-row {
   display: flex;
   align-items: flex-start;
@@ -65,7 +59,6 @@ body {
 .report-titles .title-sub  { font-size: 10px; font-weight: bold; }
 .run-block { font-size: 9.5px; text-align: right; min-width: 150px; flex-shrink: 0; line-height: 1.7; }
 .run-block .rb { font-weight: bold; }
-
 .filter-section {
   padding: 3px 12px 4px;
   font-size: 9.5px;
@@ -74,7 +67,6 @@ body {
 }
 .filter-line { display: block; }
 .filter-lbl { font-weight: bold; }
-
 .clickable,
 .acct-desc-clickable {
   cursor: pointer;
@@ -93,8 +85,104 @@ body {
   color: var(--columbia);
 }
 
-.table-wrapper { padding: 0 6px 10px; min-width: max-content; }
+/* ── PILL BAR ── */
+.pill-bar-wrap {
+  padding: 5px 12px 4px;
+  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+.pill-bar-label {
+  font-size: 8.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #999;
+  white-space: nowrap;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 11px 3px 8px;
+  border-radius: 100px;
+  border: 1.5px solid #bbb;
+  background: #fff;
+  font-size: 9.5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  color: #444;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pill:hover { border-color: #555; color: #111; }
 
+.pill[data-pill="who"] .pill-dot    { background: #0e7490; }
+.pill[data-pill="who"].pill-on      { background: #d0f0f8; border-color: #0e7490; color: #0a5c6e; }
+
+.pill[data-pill="combo"] .pill-dot  { background: #003087; }
+.pill[data-pill="combo"].pill-on    { background: #dde8ff; border-color: #003087; color: #001a57; }
+
+.pill[data-pill="type"] .pill-dot   { background: #7c3aed; }
+.pill[data-pill="type"].pill-on     { background: #ede9fe; border-color: #5b21b6; color: #5b21b6; }
+
+.pill[data-pill="period"] .pill-dot { background: #2a8a2a; }
+.pill[data-pill="period"].pill-on   { background: #dff5df; border-color: #1a5c1a; color: #1a5c1a; }
+
+.pill[data-pill="pay"] .pill-dot    { background: #c97b00; }
+.pill[data-pill="pay"].pill-on      { background: #fff3d6; border-color: #8a4b00; color: #8a4b00; }
+
+/* ── S4-STYLE HIGHLIGHT ENGINE ── */
+@keyframes hlShimmer { 0%{background-position:-200% center,0 0} 100%{background-position:300% center,0 0} }
+@keyframes hlBeat    { 0%,100%{filter:brightness(1)} 45%{filter:brightness(1.28)} }
+@keyframes hlIn      { from{opacity:0;transform:translateX(4px)} to{opacity:1;transform:translateX(0)} }
+@keyframes glowBreathe { 0%,100%{opacity:.45} 50%{opacity:1} }
+
+th.hl-hdr {
+  position:relative !important; overflow:hidden !important;
+  background-image:
+    linear-gradient(105deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 80%),
+    linear-gradient(var(--hl-fill),var(--hl-fill)) !important;
+  background-size:200% 100%,100% 100% !important;
+  background-position:-200% center,0 0 !important;
+  animation:hlShimmer 2.6s ease-in-out infinite !important;
+  border-left:1.5px solid var(--hl-line) !important;
+  border-right:1.5px solid var(--hl-line) !important;
+  border-top:2px solid var(--hl-line) !important;
+  border-bottom:3px solid var(--hl-strong) !important;
+  color:var(--hl-text) !important;
+}
+td.hl-cell {
+  background:var(--hl-cell) !important;
+  border-left:1px solid var(--hl-soft) !important;
+  border-right:1px solid var(--hl-soft) !important;
+  color:var(--hl-text) !important;
+  font-weight:700 !important;
+  animation:hlBeat 2.8s ease-in-out infinite,hlIn .35s ease both !important;
+}
+.hl-glow-strip {
+  position:absolute; pointer-events:none; z-index:3; top:0;
+  background:radial-gradient(ellipse 60% 55% at 50% 50%,
+    var(--hl-radial-center) 0%, var(--hl-radial-mid) 70%, transparent 100%);
+  animation:glowBreathe 2.8s ease-in-out infinite;
+}
+.hl-glow-strip::before,.hl-glow-strip::after {
+  content:''; position:absolute; top:0; bottom:0; width:2px;
+  background:linear-gradient(180deg,transparent 0%,var(--hl-edge) 8%,var(--hl-edge) 92%,transparent 100%);
+  animation:glowBreathe 2.8s ease-in-out infinite;
+}
+.hl-glow-strip::before { left:0; }
+.hl-glow-strip::after  { right:0; }
+
+/* ── TABLE ── */
+.table-wrapper { padding: 0 6px 10px; min-width: max-content; position: relative; }
 table.report-table {
   width: 100%;
   border-collapse: collapse;
@@ -102,7 +190,6 @@ table.report-table {
   table-layout: auto;
   white-space: nowrap;
 }
-
 .report-table thead { position: sticky; top: 0; z-index: 5; }
 .report-table thead tr.hdr-cols th {
   background: #fff;
@@ -121,7 +208,6 @@ table.report-table {
   box-shadow: 0 3px 6px -1px rgba(0,0,0,0.15);
 }
 .report-table thead tr.hdr-cols th.left { text-align: left; }
-
 .report-table tbody td {
   padding: 1px 3px;
   vertical-align: top;
@@ -130,7 +216,6 @@ table.report-table {
 }
 .report-table tbody td.r { text-align: right; }
 .report-table tbody tr:hover td { background: #f5f5f5; }
-
 tr.total-row td {
   font-weight: bold;
   border-top: 1px solid #444;
@@ -139,6 +224,7 @@ tr.total-row td {
 }
 tr.total-row td.lbl { text-align: right; padding-right: 6px; }
 
+/* ── SIDE PANEL ── */
 #explain-panel {
   width: 0; min-width: 0; overflow: hidden;
   background: var(--panel-bg); border-left: 3px solid var(--columbia);
@@ -183,7 +269,6 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
 .nat-acct-list .na-code { font-weight: bold; color: var(--columbia); min-width: 60px; flex-shrink: 0; font-size: 9.5px; }
 .nat-acct-list .na-name { color: #222; font-size: 9.5px; }
 .nat-acct-list .na-def { color: #555; font-size: 9px; margin-top: 1px; }
-
 .footnotes { padding: 2px 10px 8px; font-size: 8.5px; color: #444; font-style: italic; line-height: 1.6; }
 .training-badge {
   position: fixed; bottom: 10px; left: 10px;
@@ -196,7 +281,6 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
   padding: 3px 8px; border-radius: 10px; z-index: 999; display: none;
 }
 .tab-counter.visible { display: block; }
-
 @keyframes hint-pulse {
   0%   { box-shadow: 0 0 0 0 rgba(0,48,135,0.5); }
   70%  { box-shadow: 0 0 0 6px rgba(0,48,135,0); }
@@ -206,7 +290,6 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
 </style>
 </head>
 <body>
-
 <div id="report-panel">
  <div id="report-static">
   <div class="nav-bar">
@@ -216,7 +299,6 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
     </div>
     <a href="#">Next Accounting Period &gt;</a>
   </div>
-
   <div class="header-top-row">
     <div class="logo-area">
       <div class="logo-crown">♛</div>
@@ -235,33 +317,36 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
       <div><span class="rb">Run Time:</span> 8:20:32 PM</div>
     </div>
   </div>
-
   <div class="filter-section">
     <div class="filter-line"><span class="filter-lbl">Month From:</span> July &nbsp; <span class="filter-lbl">Month Thru:</span> June &nbsp; <span class="filter-lbl">Fiscal Year:</span> 2026 &nbsp; <span class="filter-lbl">Combo Code:</span></div>
     <div class="filter-line"><span class="filter-lbl">Business Unit:</span> COLUM - Columbia University</div>
-    <div class="filter-line"><span class="filter-lbl">Account:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Department:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Project:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Project Activity:</span></div>
-    <div class="filter-line"><span class="filter-lbl">Initiative:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Segment:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Site:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Fund:</span> ALL</div>
-    <div class="filter-line"><span class="filter-lbl">Function:</span> ALL</div>
+    <div class="filter-line"><span class="filter-lbl">Account:</span> ALL &nbsp; <span class="filter-lbl">Department:</span> ALL &nbsp; <span class="filter-lbl">Project:</span> ALL</div>
+    <div class="filter-line"><span class="filter-lbl">Initiative:</span> ALL &nbsp; <span class="filter-lbl">Segment:</span> ALL &nbsp; <span class="filter-lbl">Fund:</span> ALL &nbsp; <span class="filter-lbl">Function:</span> ALL</div>
   </div>
- </div>
+
+  <!-- ── PILL BAR — hidden by default, ↑ to activate ── -->
+  <div class="pill-bar-wrap" id="pill-bar" style="display:none;">
+    <span class="pill-bar-label">Jump to:</span>
+    <div class="pill" data-pill="who"     onclick="togglePill(this)"><span class="pill-dot"></span> Who Was Paid</div>
+    <div class="pill" data-pill="combo"   onclick="togglePill(this)"><span class="pill-dot"></span> Combo Code</div>
+    <div class="pill" data-pill="type"    onclick="togglePill(this)"><span class="pill-dot"></span> Earn Code</div>
+    <div class="pill" data-pill="period"  onclick="togglePill(this)"><span class="pill-dot"></span> Pay Period</div>
+    <div class="pill" data-pill="pay"     onclick="togglePill(this)"><span class="pill-dot"></span> Amount Paid</div>
+  </div>
+
+ </div><!-- /report-static -->
 
  <div id="table-scroll-area">
- <div class="table-wrapper">
- <table class="report-table">
+ <div class="table-wrapper" id="table-wrapper">
+ <table class="report-table" id="main-table">
   <thead id="report-thead">
    <tr class="hdr-cols">
-     <th class="left clickable first-hint" tabindex="0" data-key="emp_last_name">Employee<br>Last Name</th>
-     <th class="left clickable" tabindex="0" data-key="emp_first_name">Employee<br>First Name</th>
-     <th class="clickable" tabindex="0" data-key="emplid">EmplID</th>
+     <th class="left clickable first-hint col-who" tabindex="0" data-key="emp_last_name">Employee<br>Last Name</th>
+     <th class="left clickable col-who" tabindex="0" data-key="emp_first_name">Employee<br>First Name</th>
+     <th class="clickable col-who" tabindex="0" data-key="emplid">EmplID</th>
      <th class="clickable" tabindex="0" data-key="empl_rcd">Empl<br>Rcd #</th>
-     <th class="clickable" tabindex="0" data-key="uni">UNI</th>
-     <th class="clickable" tabindex="0" data-key="combo_code">Combo<br>Code</th>
+     <th class="clickable col-who" tabindex="0" data-key="uni">UNI</th>
+     <th class="clickable col-combo" tabindex="0" data-key="combo_code">Combo<br>Code</th>
      <th class="clickable" tabindex="0" data-key="bu">BU</th>
      <th class="clickable" tabindex="0" data-key="account">Account</th>
      <th class="left clickable" tabindex="0" data-key="account_desc">Account Description</th>
@@ -280,51 +365,47 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
      <th class="clickable" tabindex="0" data-key="function">Function</th>
      <th class="left clickable" tabindex="0" data-key="function_desc">Function<br>Description</th>
      <th class="clickable" tabindex="0" data-key="pay_group">Pay<br>Group</th>
-     <th class="clickable" tabindex="0" data-key="earn_code">Earn<br>Code</th>
+     <th class="clickable col-type" tabindex="0" data-key="earn_code">Earn<br>Code</th>
      <th class="clickable" tabindex="0" data-key="trans_cd_type">Trans<br>Type</th>
-     <th class="clickable" tabindex="0" data-key="trans_start_date">Transaction<br>Start Date</th>
-     <th class="clickable" tabindex="0" data-key="trans_end_date">Transaction<br>End Date</th>
-     <th class="r clickable" tabindex="0" data-key="period_salary">Period<br>Salary</th>
-     <th class="r clickable" tabindex="0" data-key="reg_fringe">Reg<br>Fringe</th>
-     <th class="r clickable" tabindex="0" data-key="addl_fringe">Addl<br>Fringe</th>
-     <th class="r clickable" tabindex="0" data-key="a1_fringe">A1<br>Fringe</th>
-     <th class="r clickable" tabindex="0" data-key="a2_fringe">A2<br>Fringe</th>
-     <th class="r clickable" tabindex="0" data-key="gra">GRA</th>
+     <th class="clickable col-period" tabindex="0" data-key="trans_start_date">Transaction<br>Start Date</th>
+     <th class="clickable col-period" tabindex="0" data-key="trans_end_date">Transaction<br>End Date</th>
+     <th class="r clickable col-pay" tabindex="0" data-key="period_salary">Period<br>Salary</th>
+     <th class="r clickable col-pay" tabindex="0" data-key="reg_fringe">Reg<br>Fringe</th>
+     <th class="r clickable col-pay" tabindex="0" data-key="addl_fringe">Addl<br>Fringe</th>
+     <th class="r clickable col-pay" tabindex="0" data-key="a1_fringe">A1<br>Fringe</th>
+     <th class="r clickable col-pay" tabindex="0" data-key="a2_fringe">A2<br>Fringe</th>
+     <th class="r clickable col-pay" tabindex="0" data-key="gra">GRA</th>
      <th class="clickable" tabindex="0" data-key="proj_act_start">Project<br>Activity Start<br>Date</th>
      <th class="clickable" tabindex="0" data-key="proj_act_end">Project<br>Activity End<br>Date</th>
      <th class="clickable" tabindex="0" data-key="cost_transfer_id">Cost Transfer ID</th>
    </tr>
   </thead>
   <tbody>
-<tr><td>MAHOMES</td><td>PATRICK</td><td>30148822</td><td>0</td><td>pm2847</td><td>1000481201</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200148</td><td>Kansas City Chiefs</td><td>GG011401</td><td>Gravitational Wave Progenitor Survey</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">9,844.62</td><td class="r">2,754.49</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>HILL</td><td>TYREEK</td><td>30219944</td><td>0</td><td>th3312</td><td>1000481202</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Miami Dolphins</td><td>GG011402</td><td>Dark Matter Halo Mapping Initiative</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">7,211.54</td><td class="r">2,019.23</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>KELCE</td><td>TRAVIS</td><td>30334410</td><td>0</td><td>tk8801</td><td>1000481203</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200334</td><td>Philadelphia Eagles</td><td>GG011403</td><td>Neutron Star Mergers and r-Process Nucleosynthesis</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">8,653.85</td><td class="r">2,423.08</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>HENRY</td><td>DERRICK</td><td>30441288</td><td>0</td><td>dh5521</td><td>1000481204</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200441</td><td>Baltimore Ravens</td><td>GG011404</td><td>Cosmic Ray Spectral Analysis at Ultra-High Energy</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td>TEL</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">6,538.46</td><td class="r">1,830.77</td><td class="r">412.50</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>JEFFERSON</td><td>JUSTIN</td><td>30512744</td><td>0</td><td>jj7714</td><td>1000481205</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200558</td><td>Minnesota Vikings</td><td>GG011405</td><td>Exoplanet Atmospheric Biosignature Detection</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>08/01/2025</td><td>08/31/2025</td><td class="r">7,884.62</td><td class="r">2,207.69</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>MCCAFFREY</td><td>CHRISTIAN</td><td>30628810</td><td>0</td><td>cm4402</td><td>1000481206</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200672</td><td>San Francisco 49ers</td><td>GG011406</td><td>Quasar Host Galaxy Morphology at High Redshift</td><td>02</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td>011</td><td>PY</td><td>07/15/2025</td><td>08/14/2025</td><td class="r">5,192.31</td><td class="r">1,453.85</td><td class="r">0.00</td><td class="r">875.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>STROUD</td><td>CJ</td><td>30711235</td><td>0</td><td>cs9901</td><td>1000481207</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200781</td><td>Houston Texans</td><td>GG011407</td><td>Millisecond Pulsar Timing Array for Gravitational Background</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>VAC</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">3,846.15</td><td class="r">1,076.92</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>CHASE</td><td>JAMARR</td><td>30822917</td><td>0</td><td>jc6618</td><td>1000481208</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200895</td><td>Cincinnati Bengals</td><td>GG011408</td><td>Supernova Remnant Morphology in the Magellanic Cloud</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>08/01/2025</td><td>08/31/2025</td><td class="r">9,134.62</td><td class="r">2,557.69</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>BURROW</td><td>JOE</td><td>30934122</td><td>0</td><td>jb2213</td><td>1000481209</td><td>COLUM</td><td>59010</td><td class="acct-desc-clickable" tabindex="0" data-acct="59010">Fringe Benefit Charge</td><td>5200895</td><td>Cincinnati Bengals</td><td>GG011409</td><td>Active Galactic Nuclei Feedback and Star Formation Quenching</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>SRE</td><td>CT</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">6,250.00</td><td class="r">1,750.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td>3889294</td></tr>
-<tr><td>DIGGS</td><td>STEFON</td><td>31044800</td><td>0</td><td>sd7723</td><td>1000481210</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Buffalo Bills</td><td>GG011410</td><td>Interstellar Medium Turbulence and Magnetic Field Mapping</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td>TEL</td><td>PY</td><td>08/01/2025</td><td>08/31/2025</td><td class="r">4,711.54</td><td class="r">1,319.23</td><td class="r">625.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>HURTS</td><td>JALEN</td><td>31155930</td><td>0</td><td>jh4480</td><td>1000481211</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200334</td><td>Philadelphia Eagles</td><td>GG011411</td><td>Black Hole Accretion Disk Spectropolarimetry</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">10,576.92</td><td class="r">2,961.54</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>LAMB</td><td>CEEDEE</td><td>31268841</td><td>0</td><td>cl5577</td><td>1000481212</td><td>COLUM</td><td>52810</td><td class="acct-desc-clickable" tabindex="0" data-acct="52810">GRA Tuition</td><td>5200441</td><td>Dallas Cowboys</td><td>GG011412</td><td>Stellar Population Synthesis in High-Redshift Galaxies</td><td>02</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW2</td><td>011</td><td>PY</td><td>07/15/2025</td><td>08/14/2025</td><td class="r">5,769.23</td><td class="r">1,615.38</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">750.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>ALLEN</td><td>JOSH</td><td>31381002</td><td>0</td><td>ja9934</td><td>1000481213</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Buffalo Bills</td><td>GG011413</td><td>Gamma-Ray Burst Afterglow Multiwavelength Monitoring</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>08/01/2025</td><td>08/31/2025</td><td class="r">11,057.69</td><td class="r">3,096.15</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>WATT</td><td>TJ</td><td>31492114</td><td>0</td><td>tw1122</td><td>1000481214</td><td>COLUM</td><td>59010</td><td class="acct-desc-clickable" tabindex="0" data-acct="59010">Fringe Benefit Charge</td><td>5200672</td><td>Pittsburgh Steelers</td><td>GG011414</td><td>Cosmological Constraints from Type Ia Supernova Light Curves</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>VAC</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">2,884.62</td><td class="r">807.69</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>BOSA</td><td>NICK</td><td>31600337</td><td>0</td><td>nb8841</td><td>1000481215</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200781</td><td>San Francisco 49ers</td><td>GG011415</td><td>Reionization Era Hydrogen 21cm Signal Tomography</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td>SRE</td><td>CT</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">8,076.92</td><td class="r">2,261.54</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td>3938518</td></tr>
-<tr><td>JONES</td><td>ZEKE</td><td>31712488</td><td>0</td><td>zj3390</td><td>1000481216</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200895</td><td>Cleveland Browns</td><td>GG011416</td><td>Protoplanetary Disk Dust Grain Evolution Near T Tauri Stars</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>08/01/2025</td><td>08/31/2025</td><td class="r">6,923.08</td><td class="r">1,938.46</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>KITTLE</td><td>GEORGE</td><td>31824600</td><td>0</td><td>gk7712</td><td>1000481217</td><td>COLUM</td><td>52810</td><td class="acct-desc-clickable" tabindex="0" data-acct="52810">GRA Tuition</td><td>5200148</td><td>San Francisco 49ers</td><td>GG011417</td><td>Lyman-Alpha Forest Baryon Acoustic Oscillation Measurement</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW2</td><td>TEL</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">7,500.00</td><td class="r">2,100.00</td><td class="r">312.50</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>STAFFORD</td><td>MATTHEW</td><td>31937720</td><td>0</td><td>ms6601</td><td>1000481218</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Los Angeles Rams</td><td>GG011418</td><td>Stellar Mass Black Hole Binary X-Ray Transient Survey</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>011</td><td>PY</td><td>08/15/2025</td><td>09/14/2025</td><td class="r">4,326.92</td><td class="r">1,211.54</td><td class="r">0.00</td><td class="r">650.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>ADAMS</td><td>DAVANTE</td><td>32048810</td><td>0</td><td>da8834</td><td>1000481219</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200334</td><td>Green Bay Packers</td><td>GG011419</td><td>Circumgalactic Medium Absorption Line Spectroscopy</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td>REG</td><td>PY</td><td>07/01/2025</td><td>07/31/2025</td><td class="r">8,461.54</td><td class="r">2,369.23</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
-<tr><td>EKELER</td><td>AUSTIN</td><td>32162905</td><td>0</td><td>ae5561</td><td>1000481220</td><td>COLUM</td><td>59010</td><td class="acct-desc-clickable" tabindex="0" data-acct="59010">Fringe Benefit Charge</td><td>5200441</td><td>Los Angeles Chargers</td><td>GG011420</td><td>Magnetar Spin-Down and Soft Gamma Repeater Outburst Dynamics</td><td>02</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td>SRE</td><td>CT</td><td>08/01/2025</td><td>08/31/2025</td><td class="r">5,576.92</td><td class="r">1,561.54</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td class="r">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td>3912047</td></tr>
-<tr class="total-row"><td colspan="28" class="lbl">Totals</td><td class="r">140,221.55</td><td class="r">39,316.02</td><td class="r">1,350.00</td><td class="r">1,525.00</td><td class="r">750.00</td><td class="r">0.00</td><td colspan="3"></td></tr>
+<tr><td class="col-who">MAHOMES</td><td class="col-who">PATRICK</td><td class="col-who">30148822</td><td>0</td><td class="col-who">pm2847</td><td class="col-combo">1000481201</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200148</td><td>Kansas City Chiefs</td><td>GG011401</td><td>Gravitational Wave Progenitor Survey</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">9,844.62</td><td class="r col-pay">2,754.49</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">HILL</td><td class="col-who">TYREEK</td><td class="col-who">30219944</td><td>0</td><td class="col-who">th3312</td><td class="col-combo">1000481202</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Miami Dolphins</td><td>GG011402</td><td>Dark Matter Halo Mapping Initiative</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">7,211.54</td><td class="r col-pay">2,019.23</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">KELCE</td><td class="col-who">TRAVIS</td><td class="col-who">30334410</td><td>0</td><td class="col-who">tk8801</td><td class="col-combo">1000481203</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200334</td><td>Philadelphia Eagles</td><td>GG011403</td><td>Neutron Star Mergers and r-Process Nucleosynthesis</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">8,653.85</td><td class="r col-pay">2,423.08</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">HENRY</td><td class="col-who">DERRICK</td><td class="col-who">30441288</td><td>0</td><td class="col-who">dh5521</td><td class="col-combo">1000481204</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200441</td><td>Baltimore Ravens</td><td>GG011404</td><td>Cosmic Ray Spectral Analysis at Ultra-High Energy</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td class="col-type">TEL</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">6,538.46</td><td class="r col-pay">1,830.77</td><td class="r col-pay">412.50</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">JEFFERSON</td><td class="col-who">JUSTIN</td><td class="col-who">30512744</td><td>0</td><td class="col-who">jj7714</td><td class="col-combo">1000481205</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200558</td><td>Minnesota Vikings</td><td>GG011405</td><td>Exoplanet Atmospheric Biosignature Detection</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">08/01/2025</td><td class="col-period">08/31/2025</td><td class="r col-pay">7,884.62</td><td class="r col-pay">2,207.69</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">MCCAFFREY</td><td class="col-who">CHRISTIAN</td><td class="col-who">30628810</td><td>0</td><td class="col-who">cm4402</td><td class="col-combo">1000481206</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200672</td><td>San Francisco 49ers</td><td>GG011406</td><td>Quasar Host Galaxy Morphology at High Redshift</td><td>02</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td class="col-type">011</td><td>PY</td><td class="col-period">07/15/2025</td><td class="col-period">08/14/2025</td><td class="r col-pay">5,192.31</td><td class="r col-pay">1,453.85</td><td class="r col-pay">0.00</td><td class="r col-pay">875.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">STROUD</td><td class="col-who">CJ</td><td class="col-who">30711235</td><td>0</td><td class="col-who">cs9901</td><td class="col-combo">1000481207</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200781</td><td>Houston Texans</td><td>GG011407</td><td>Millisecond Pulsar Timing Array for Gravitational Background</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">VAC</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">3,846.15</td><td class="r col-pay">1,076.92</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">CHASE</td><td class="col-who">JAMARR</td><td class="col-who">30822917</td><td>0</td><td class="col-who">jc6618</td><td class="col-combo">1000481208</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200895</td><td>Cincinnati Bengals</td><td>GG011408</td><td>Supernova Remnant Morphology in the Magellanic Cloud</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">08/01/2025</td><td class="col-period">08/31/2025</td><td class="r col-pay">9,134.62</td><td class="r col-pay">2,557.69</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">BURROW</td><td class="col-who">JOE</td><td class="col-who">30934122</td><td>0</td><td class="col-who">jb2213</td><td class="col-combo">1000481209</td><td>COLUM</td><td>59010</td><td class="acct-desc-clickable" tabindex="0" data-acct="59010">Fringe Benefit Charge</td><td>5200895</td><td>Cincinnati Bengals</td><td>GG011409</td><td>Active Galactic Nuclei Feedback and Star Formation Quenching</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">SRE</td><td>CT</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">6,250.00</td><td class="r col-pay">1,750.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td>3889294</td></tr>
+<tr><td class="col-who">DIGGS</td><td class="col-who">STEFON</td><td class="col-who">31044800</td><td>0</td><td class="col-who">sd7723</td><td class="col-combo">1000481210</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Buffalo Bills</td><td>GG011410</td><td>Interstellar Medium Turbulence and Magnetic Field Mapping</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td class="col-type">TEL</td><td>PY</td><td class="col-period">08/01/2025</td><td class="col-period">08/31/2025</td><td class="r col-pay">4,711.54</td><td class="r col-pay">1,319.23</td><td class="r col-pay">625.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">HURTS</td><td class="col-who">JALEN</td><td class="col-who">31155930</td><td>0</td><td class="col-who">jh4480</td><td class="col-combo">1000481211</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200334</td><td>Philadelphia Eagles</td><td>GG011411</td><td>Black Hole Accretion Disk Spectropolarimetry</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">10,576.92</td><td class="r col-pay">2,961.54</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">LAMB</td><td class="col-who">CEEDEE</td><td class="col-who">31268841</td><td>0</td><td class="col-who">cl5577</td><td class="col-combo">1000481212</td><td>COLUM</td><td>52810</td><td class="acct-desc-clickable" tabindex="0" data-acct="52810">GRA Tuition</td><td>5200441</td><td>Dallas Cowboys</td><td>GG011412</td><td>Stellar Population Synthesis in High-Redshift Galaxies</td><td>02</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW2</td><td class="col-type">011</td><td>PY</td><td class="col-period">07/15/2025</td><td class="col-period">08/14/2025</td><td class="r col-pay">5,769.23</td><td class="r col-pay">1,615.38</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">750.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">ALLEN</td><td class="col-who">JOSH</td><td class="col-who">31381002</td><td>0</td><td class="col-who">ja9934</td><td class="col-combo">1000481213</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Buffalo Bills</td><td>GG011413</td><td>Gamma-Ray Burst Afterglow Multiwavelength Monitoring</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">08/01/2025</td><td class="col-period">08/31/2025</td><td class="r col-pay">11,057.69</td><td class="r col-pay">3,096.15</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">WATT</td><td class="col-who">TJ</td><td class="col-who">31492114</td><td>0</td><td class="col-who">tw1122</td><td class="col-combo">1000481214</td><td>COLUM</td><td>59010</td><td class="acct-desc-clickable" tabindex="0" data-acct="59010">Fringe Benefit Charge</td><td>5200672</td><td>Pittsburgh Steelers</td><td>GG011414</td><td>Cosmological Constraints from Type Ia Supernova Light Curves</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">VAC</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">2,884.62</td><td class="r col-pay">807.69</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">BOSA</td><td class="col-who">NICK</td><td class="col-who">31600337</td><td>0</td><td class="col-who">nb8841</td><td class="col-combo">1000481215</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200781</td><td>San Francisco 49ers</td><td>GG011415</td><td>Reionization Era Hydrogen 21cm Signal Tomography</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td class="col-type">SRE</td><td>CT</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">8,076.92</td><td class="r col-pay">2,261.54</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td>3938518</td></tr>
+<tr><td class="col-who">JONES</td><td class="col-who">ZEKE</td><td class="col-who">31712488</td><td>0</td><td class="col-who">zj3390</td><td class="col-combo">1000481216</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200895</td><td>Cleveland Browns</td><td>GG011416</td><td>Protoplanetary Disk Dust Grain Evolution Near T Tauri Stars</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">08/01/2025</td><td class="col-period">08/31/2025</td><td class="r col-pay">6,923.08</td><td class="r col-pay">1,938.46</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">KITTLE</td><td class="col-who">GEORGE</td><td class="col-who">31824600</td><td>0</td><td class="col-who">gk7712</td><td class="col-combo">1000481217</td><td>COLUM</td><td>52810</td><td class="acct-desc-clickable" tabindex="0" data-acct="52810">GRA Tuition</td><td>5200148</td><td>San Francisco 49ers</td><td>GG011417</td><td>Lyman-Alpha Forest Baryon Acoustic Oscillation Measurement</td><td>01</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW2</td><td class="col-type">TEL</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">7,500.00</td><td class="r col-pay">2,100.00</td><td class="r col-pay">312.50</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">STAFFORD</td><td class="col-who">MATTHEW</td><td class="col-who">31937720</td><td>0</td><td class="col-who">ms6601</td><td class="col-combo">1000481218</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200219</td><td>Los Angeles Rams</td><td>GG011418</td><td>Stellar Mass Black Hole Binary X-Ray Transient Survey</td><td>02</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">011</td><td>PY</td><td class="col-period">08/15/2025</td><td class="col-period">09/14/2025</td><td class="r col-pay">4,326.92</td><td class="r col-pay">1,211.54</td><td class="r col-pay">0.00</td><td class="r col-pay">650.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">ADAMS</td><td class="col-who">DAVANTE</td><td class="col-who">32048810</td><td>0</td><td class="col-who">da8834</td><td class="col-combo">1000481219</td><td>COLUM</td><td>53300</td><td class="acct-desc-clickable" tabindex="0" data-acct="53300">Officer of Administration</td><td>5200334</td><td>Green Bay Packers</td><td>GG011419</td><td>Circumgalactic Medium Absorption Line Spectroscopy</td><td>01</td><td>29214</td><td>ENG General Dept Operations</td><td>52000167</td><td>ENG Staff General</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>BW1</td><td class="col-type">REG</td><td>PY</td><td class="col-period">07/01/2025</td><td class="col-period">07/31/2025</td><td class="r col-pay">8,461.54</td><td class="r col-pay">2,369.23</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td></td></tr>
+<tr><td class="col-who">EKELER</td><td class="col-who">AUSTIN</td><td class="col-who">32162905</td><td>0</td><td class="col-who">ae5561</td><td class="col-combo">1000481220</td><td>COLUM</td><td>59010</td><td class="acct-desc-clickable" tabindex="0" data-acct="59010">Fringe Benefit Charge</td><td>5200441</td><td>Los Angeles Chargers</td><td>GG011420</td><td>Magnetar Spin-Down and Soft Gamma Repeater Outburst Dynamics</td><td>02</td><td>00000</td><td>Undefined</td><td>00000000</td><td>Undefined</td><td></td><td></td><td>01</td><td>210</td><td>EXTERNAL AFFAIRS &amp; FUNDRAISING</td><td>MN1</td><td class="col-type">SRE</td><td>CT</td><td class="col-period">08/01/2025</td><td class="col-period">08/31/2025</td><td class="r col-pay">5,576.92</td><td class="r col-pay">1,561.54</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td class="r col-pay">0.00</td><td>09/01/2021</td><td>08/31/2027</td><td>3912047</td></tr>
+<tr class="total-row"><td colspan="28" class="lbl">Totals</td><td class="r col-pay">140,221.55</td><td class="r col-pay">39,316.02</td><td class="r col-pay">1,350.00</td><td class="r col-pay">1,525.00</td><td class="r col-pay">750.00</td><td class="r col-pay">0.00</td><td colspan="3"></td></tr>
   </tbody>
  </table>
  </div>
-
- <div class="footnotes">
-   * 1 of 1 &nbsp;&nbsp; TRANSACTION 1 thru 20
- </div>
-
+ <div class="footnotes">* 1 of 1 &nbsp;&nbsp; TRANSACTION 1 thru 20</div>
  </div>
 </div>
 
@@ -341,55 +422,223 @@ tr.total-row td.lbl { text-align: right; padding-right: 6px; }
     </div>
   </div>
 </div>
-
 <div class="training-badge">🎓 Training Mode</div>
 <div class="tab-counter" id="tab-counter"></div>
 
 <script>
+// ── PILL CONFIG ──
+var PILL_CFG = {
+  who: {
+    colClass:'col-who',
+    text:'#0a5c6e', line:'rgba(14,116,144,.38)', strong:'rgba(14,116,144,.72)',
+    soft:'rgba(14,116,144,.18)', fill:'rgba(14,116,144,.04)', cell:'rgba(14,116,144,.025)',
+    rCenter:'rgba(14,116,144,.04)', rMid:'rgba(14,116,144,.015)', edge:'rgba(14,116,144,.55)'
+  },
+  combo: {
+    colClass:'col-combo',
+    text:'#001a57', line:'rgba(0,48,135,.38)', strong:'rgba(0,48,135,.72)',
+    soft:'rgba(0,48,135,.18)', fill:'rgba(0,48,135,.04)', cell:'rgba(0,48,135,.025)',
+    rCenter:'rgba(0,48,135,.04)', rMid:'rgba(0,48,135,.015)', edge:'rgba(0,48,135,.55)'
+  },
+  type: {
+    colClass:'col-type',
+    text:'#5b21b6', line:'rgba(124,58,237,.38)', strong:'rgba(124,58,237,.72)',
+    soft:'rgba(124,58,237,.18)', fill:'rgba(124,58,237,.04)', cell:'rgba(124,58,237,.025)',
+    rCenter:'rgba(124,58,237,.04)', rMid:'rgba(124,58,237,.015)', edge:'rgba(124,58,237,.55)'
+  },
+  period: {
+    colClass:'col-period',
+    text:'#1a5c1a', line:'rgba(42,140,92,.38)', strong:'rgba(42,140,92,.72)',
+    soft:'rgba(42,140,92,.18)', fill:'rgba(42,140,92,.04)', cell:'rgba(42,140,92,.025)',
+    rCenter:'rgba(42,140,92,.04)', rMid:'rgba(42,140,92,.015)', edge:'rgba(42,140,92,.55)'
+  },
+  pay: {
+    colClass:'col-pay',
+    text:'#6b3800', line:'rgba(180,100,0,.38)', strong:'rgba(180,100,0,.72)',
+    soft:'rgba(180,100,0,.18)', fill:'rgba(196,167,71,.05)', cell:'rgba(196,167,71,.03)',
+    rCenter:'rgba(196,167,71,.05)', rMid:'rgba(196,167,71,.015)', edge:'rgba(180,100,0,.55)'
+  }
+};
+
+var activePill = null;
+var glowStrips = [];
+
+function applyVars(el, cfg) {
+  el.style.setProperty('--hl-text',   cfg.text);
+  el.style.setProperty('--hl-line',   cfg.line);
+  el.style.setProperty('--hl-strong', cfg.strong);
+  el.style.setProperty('--hl-soft',   cfg.soft);
+  el.style.setProperty('--hl-fill',   cfg.fill);
+  el.style.setProperty('--hl-cell',   cfg.cell);
+  el.style.setProperty('--hl-edge',   cfg.edge);
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.hl-hdr').forEach(function(el) { el.classList.remove('hl-hdr'); el.style.cssText = ''; });
+  document.querySelectorAll('.hl-cell').forEach(function(el) { el.classList.remove('hl-cell'); el.style.cssText = ''; });
+  glowStrips.forEach(function(s) { s.parentNode && s.parentNode.removeChild(s); });
+  glowStrips = [];
+}
+
+function positionGlowStrips(colClass, cfg) {
+  var wrapper = document.getElementById('table-wrapper');
+  if (!wrapper) return;
+  var wRect = wrapper.getBoundingClientRect();
+  if (wRect.width === 0) { setTimeout(function(){ positionGlowStrips(colClass, cfg); }, 80); return; }
+  var headers = document.querySelectorAll('th.' + colClass);
+  headers.forEach(function(th) {
+    var hRect = th.getBoundingClientRect();
+    var scrollArea = document.getElementById('table-scroll-area');
+    var strip = document.createElement('div');
+    strip.className = 'hl-glow-strip';
+    strip.style.setProperty('--hl-radial-center', cfg.rCenter);
+    strip.style.setProperty('--hl-radial-mid',    cfg.rMid);
+    strip.style.setProperty('--hl-edge',          cfg.edge);
+    strip.style.left   = (hRect.left - wRect.left + (scrollArea ? scrollArea.scrollLeft : 0)) + 'px';
+    strip.style.width  = hRect.width + 'px';
+    strip.style.height = wrapper.scrollHeight + 'px';
+    strip.style.top    = '0';
+    wrapper.appendChild(strip);
+    glowStrips.push(strip);
+  });
+}
+
+function applyHighlight(pill) {
+  var cfg = PILL_CFG[pill];
+  if (!cfg) return;
+  document.querySelectorAll('th.' + cfg.colClass).forEach(function(th) { th.classList.add('hl-hdr'); applyVars(th, cfg); });
+  document.querySelectorAll('td.' + cfg.colClass).forEach(function(td) { td.classList.add('hl-cell'); applyVars(td, cfg); });
+
+  // Scroll the first highlighted column into view
+  var firstTh = document.querySelector('th.' + cfg.colClass);
+  if (firstTh) {
+    var scrollArea = document.getElementById('table-scroll-area');
+    var thRect = firstTh.getBoundingClientRect();
+    var saRect = scrollArea.getBoundingClientRect();
+    var isLeftOfView  = thRect.left < saRect.left + 40;
+    var isRightOfView = thRect.right > saRect.right - 40;
+    if (isLeftOfView || isRightOfView) {
+      var targetScroll = scrollArea.scrollLeft + (thRect.left - saRect.left) - 60;
+      scrollArea.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+  }
+
+  setTimeout(function() { positionGlowStrips(cfg.colClass, cfg); }, 60);
+}
+
+function togglePill(el) {
+  var p = el.getAttribute('data-pill');
+  if (activePill === p) {
+    el.classList.remove('pill-on');
+    clearHighlights();
+    activePill = null;
+    return;
+  }
+  if (activePill) {
+    var prev = document.querySelector('.pill[data-pill="' + activePill + '"]');
+    if (prev) prev.classList.remove('pill-on');
+    clearHighlights();
+  }
+  el.classList.add('pill-on');
+  activePill = p;
+  applyHighlight(p);
+}
+
+// Reposition strips on horizontal scroll
+var scrollArea = document.getElementById('table-scroll-area');
+if (scrollArea) {
+  scrollArea.addEventListener('scroll', function() {
+    if (activePill) {
+      glowStrips.forEach(function(s) { s.parentNode && s.parentNode.removeChild(s); });
+      glowStrips = [];
+      positionGlowStrips(PILL_CFG[activePill].colClass, PILL_CFG[activePill]);
+    }
+  });
+}
+
+// ── ARROW KEY CONTROLS ──
+var PILL_ORDER = ['who','combo','type','period','pay'];
+var pillBarVisible = false;
+
+function showPillBar() {
+  document.getElementById('pill-bar').style.display = 'flex';
+  pillBarVisible = true;
+  if (!activePill) {
+    var fp = document.querySelector('.pill[data-pill="who"]');
+    if (fp) togglePill(fp);
+  }
+}
+function hidePillBar() {
+  document.getElementById('pill-bar').style.display = 'none';
+  pillBarVisible = false;
+  if (activePill) {
+    var prev = document.querySelector('.pill[data-pill="' + activePill + '"]');
+    if (prev) prev.classList.remove('pill-on');
+    clearHighlights();
+    activePill = null;
+  }
+}
+function navigatePill(dir) {
+  if (!pillBarVisible) return;
+  var idx = activePill ? PILL_ORDER.indexOf(activePill) : -1;
+  var next = idx + dir;
+  if (next < 0) next = PILL_ORDER.length - 1;
+  if (next >= PILL_ORDER.length) next = 0;
+  var np = document.querySelector('.pill[data-pill="' + PILL_ORDER[next] + '"]');
+  if (np) togglePill(np);
+}
+
+// ── FIELD GUIDE (original logic preserved) ──
 const EXPLANATIONS = {
-  emp_last_name: { label: 'Employee Last Name', what: 'The employee\'s last name.', interpret: 'This is one of the primary identifiers used to recognize the employee tied to the payroll line.', why: 'It helps users quickly find and validate the individual associated with the charge.', related: 'Use with Employee First Name, EmplID, and UNI to confirm employee identity.' },
-  emp_first_name: { label: 'Employee First Name', what: 'The employee\'s first name.', interpret: 'This works with the last name to identify the person tied to the payroll transaction.', why: 'It helps distinguish employees with similar last names and supports accurate review.', related: 'Use with Employee Last Name, EmplID, and UNI.' },
-  emplid: { label: 'EmplID', what: 'The employee\'s system-assigned employee ID.', interpret: 'This is the formal HR/payroll identifier for the individual.', why: 'This is often the most reliable employee identifier for research, reconciliation, and payroll follow-up.', related: 'Use with UNI, Empl Rcd #, and employee name fields.' },
-  empl_rcd: { label: 'Empl Rcd #', what: 'The employee record number tied to the payroll charge.', interpret: 'An employee can have more than one employment record in the system. This field tells you which job record the payroll line came from.', why: 'It helps separate charges when one employee holds multiple roles or appointments.', related: 'Use with EmplID, Pay Group, and Earn Code.' },
-  uni: { label: 'UNI', what: 'The employee\'s Columbia UNI.', interpret: 'This is the employee\'s institutional login identifier.', why: 'It is a familiar identifier for departments and is often easier to recognize than EmplID.', related: 'Use with EmplID, Employee Last Name, and Employee First Name.' },
-  combo_code: { label: 'Combo Code', what: 'The Combo Code is the payroll distribution code representing the full ChartString used to charge payroll.', interpret: 'Think of this as the payroll system\'s shortcut for the complete set of ChartFields behind the transaction.', why: 'It shows how payroll was distributed financially and helps validate whether salary was charged to the correct funding setup.', related: 'It ties to BU, Account, Department, Project, Proj Activity, Initiative, and Segment.' },
-  bu: { label: 'BU', what: 'The Business Unit where the payroll transaction is recorded.', interpret: 'This identifies the top-level financial environment the payroll line belongs to.', why: 'It confirms the transaction posted in the correct institutional ledger structure.', related: 'Use with Fund, Department, and Project.' },
-  account: { label: 'Account', what: 'The natural account code describing the type of payroll-related transaction.', interpret: 'This tells you what type of payroll expense is being recorded, such as salary, fringe, or GRA tuition.', why: 'It is a core classification field because it defines what was actually charged.', related: 'Use with Account Description, Period Salary, and the fringe columns.' },
-  account_desc: { label: 'Account Description', what: 'The readable description of the Account code.', interpret: 'This explains the type of payroll charge in plain language.', why: 'It helps users quickly understand whether the line is salary, fringe, or another payroll-related amount.', related: 'Paired directly with Account. In this training view, each account description cell is also clickable.' },
-  department: { label: 'Department', what: 'The Department ChartField identifies the unit responsible for the payroll charge.', interpret: 'This identifies the organizational owner of the transaction.', why: 'It determines who is responsible for the expense and whose budget is affected.', related: 'Use with Department Description, Project, and Fund.' },
-  dept_desc: { label: 'Department Description', what: 'The readable name of the department code.', interpret: 'This translates the department code into the department\'s actual name.', why: 'It makes the report easier to review and reduces coding confusion.', related: 'Paired directly with Department.' },
-  project: { label: 'Project', what: 'The Project ChartField identifies the specific project or award receiving the payroll expense.', interpret: 'This tells you which project is being charged.', why: 'It is essential for project-level payroll review, especially for sponsored activity.', related: 'Use with Project Description, Proj Activity, and Project Activity dates.' },
-  proj_desc: { label: 'Project Description', what: 'The readable title of the Project code.', interpret: 'This explains the project in plain language.', why: 'It helps confirm that payroll was charged to the intended project.', related: 'Paired directly with Project.' },
-  proj_activity: { label: 'Proj Activity', what: 'Activity identifies the specific phase or workstream within the project.', interpret: 'This narrows the charge to a specific project sub-scope.', why: 'It provides a finer level of tracking within a project.', related: 'Use with Project, Project Activity Start Date, and Project Activity End Date.' },
-  initiative: { label: 'Initiative', what: 'The Initiative ChartField reflects the broader school-wide purpose or operating classification of the activity.', interpret: 'Think of Initiative as a strategic roll-up tag.', why: 'It supports higher-level analysis across departments and projects.', related: 'Use with Initiative Description and Segment.' },
-  initiative_desc: { label: 'Initiative Description', what: 'The readable explanation of the Initiative code.', interpret: 'This tells you what the initiative tag means in plain language.', why: 'It helps users understand why the payroll charge carries that classification.', related: 'Paired directly with Initiative.' },
-  segment: { label: 'Segment', what: 'The Segment ChartField provides additional detail about who or what the activity is specifically associated with.', interpret: 'This is a more granular tracking layer beneath department and project.', why: 'It supports detailed reporting and classification.', related: 'Use with Segment Description and Initiative.' },
-  segment_desc: { label: 'Segment Description', what: 'The readable description of the Segment code.', interpret: 'This explains who or what the segment classification represents.', why: 'It makes the Segment code interpretable without requiring knowledge of the code itself.', related: 'Paired directly with Segment.' },
-  site: { label: 'Site', what: 'The site or location code associated with the payroll transaction, when applicable.', interpret: 'This tells you whether the payroll charge is tied to a particular site or location.', why: 'It supports location-based reporting where site matters operationally or financially.', related: 'Use with Site Description and Department.' },
-  site_desc: { label: 'Site Description', what: 'The readable name of the Site code.', interpret: 'This explains the site classification in plain language.', why: 'It helps users understand the location context without needing to know the code itself.', related: 'Paired directly with Site.' },
-  fund: { label: 'Fund', what: 'The fund source supporting the payroll expense.', interpret: 'This tells you what type of money is paying for the payroll charge.', why: 'This is one of the key compliance and budget fields because payroll must be charged to an appropriate funding source.', related: 'Use with Project, Department, and Function.' },
-  function: { label: 'Function', what: 'The functional classification of the payroll expense.', interpret: 'This tells you the broad institutional purpose supported by the payroll charge.', why: 'It helps group payroll expenses for reporting by institutional function.', related: 'Use with Function Description, Fund, and Department.' },
-  function_desc: { label: 'Function Description', what: 'The readable description of the Function code.', interpret: 'This explains the function category in plain language.', why: 'It makes functional classifications easier to understand during payroll review.', related: 'Paired directly with Function.' },
-  pay_group: { label: 'Pay Group', what: 'The payroll grouping that determines how the employee is processed in payroll.', interpret: 'This identifies the payroll cycle or employee payroll category the person belongs to.', why: 'It helps explain payroll timing and processing rules.', related: 'Use with Empl Rcd #, Earn Code, and transaction dates.' },
-  earn_code: { label: 'Earn Code', what: 'The payroll earnings code identifying the type of pay being charged. In this training view, the Earn Code panel expands into grouped categories so staff can learn common codes by type rather than memorizing them one by one.', interpret: 'Start with the category first: regular and time-based pay, supplemental pay, student and stipend payments, allowances, or specialized adjustments. Then expand the relevant category to read the plain-English meaning of each code.', why: 'Earn code is one of the most important payroll-detail fields because it explains the nature of the payment itself and helps staff distinguish routine pay from special, tax-sensitive, or correction-related entries.', related: 'Use with Pay Group, Transaction dates, Period Salary, and Trans Type. Codes like REG, VAC, TEL, 011, and SRE should not be interpreted the same way.' },
-  trans_cd_type: { label: 'Trans Type', what: 'The transaction type identifying how the payroll line was processed.', interpret: 'PY indicates a normal payroll posting. CT indicates a cost transfer or redistribution.', why: 'It distinguishes standard payroll entries from adjustments that may require explanation.', related: 'Use with Cost Transfer ID, Earn Code, and transaction dates.' },
-  trans_start_date: { label: 'Transaction Start Date', what: 'The beginning date of the payroll transaction or earning period.', interpret: 'This shows when the payroll activity or pay period represented by the line began.', why: 'It helps confirm the payroll charge belongs in the expected time period.', related: 'Use with Transaction End Date and Earn Code.' },
-  trans_end_date: { label: 'Transaction End Date', what: 'The ending date of the payroll transaction or earning period.', interpret: 'This shows when the payroll activity or pay period represented by the line ended.', why: 'It helps confirm timing and supports retroactive payroll review.', related: 'Use with Transaction Start Date, Pay Group, and Earn Code.' },
-  period_salary: { label: 'Period Salary', what: 'The salary amount charged for that payroll period or transaction line.', interpret: 'This is the core salary amount before looking at fringe components.', why: 'It is the main direct payroll expense shown on the report.', related: 'Use with Reg Fringe, Addl Fringe, A1 Fringe, A2 Fringe, and GRA.' },
-  reg_fringe: { label: 'Reg Fringe', what: 'The regular fringe benefit amount charged on the payroll line.', interpret: 'This represents the normal fringe cost associated with the salary charge.', why: 'Fringe is a significant part of total payroll cost.', related: 'Use with Period Salary and the other fringe columns.' },
-  addl_fringe: { label: 'Addl Fringe', what: 'Additional fringe benefit costs charged on the payroll line, when applicable.', interpret: 'This reflects fringe costs beyond the regular fringe amount.', why: 'It helps explain why the total payroll burden may be higher than salary plus regular fringe alone.', related: 'Use with Reg Fringe, A1 Fringe, and A2 Fringe.' },
-  a1_fringe: { label: 'A1 Fringe', what: 'A fringe component recorded under the A1 fringe category.', interpret: 'This is a specific fringe classification used in payroll costing.', why: 'It provides more detailed visibility into how fringe expenses are broken out.', related: 'Use with Reg Fringe, Addl Fringe, A2 Fringe, and Period Salary.' },
-  a2_fringe: { label: 'A2 Fringe', what: 'A fringe component recorded under the A2 fringe category.', interpret: 'This is another specific fringe classification used in payroll costing.', why: 'It adds detail to the full payroll burden.', related: 'Use with Reg Fringe, Addl Fringe, A1 Fringe, and Period Salary.' },
-  gra: { label: 'GRA', what: 'The GRA column captures the Graduate Research Assistant tuition remission amount associated with the payroll line, when applicable.', interpret: 'This column will be populated when the payroll line involves a graduate research assistant whose appointment includes tuition remission.', why: 'GRA tuition remission is a significant and often overlooked component of the true cost of employing a graduate research assistant.', related: 'Use with GRA-related account descriptions, Period Salary, and fringe to understand full cost.' },
-  proj_act_start: { label: 'Project Activity Start Date', what: 'The effective start date for the project activity tied to the payroll charge.', interpret: 'This shows when that project activity became valid for charging.', why: 'It helps confirm whether the payroll line was charged during the valid life of the activity.', related: 'Use with Proj Activity, Project Activity End Date, and transaction dates.' },
-  proj_act_end: { label: 'Project Activity End Date', what: 'The effective end date for the project activity tied to the payroll charge.', interpret: 'This shows when that project activity stops being valid for charging.', why: 'It is important for identifying payroll lines that may have posted outside the intended activity window.', related: 'Use with Proj Activity, Project Activity Start Date, and transaction dates.' },
-  cost_transfer_id: { label: 'Cost Transfer ID', what: 'The identifier associated with a payroll cost transfer, if the payroll charge was moved or adjusted after original posting.', interpret: 'If populated, this signals that the payroll line may be tied to a redistribution or correction of salary expense.', why: 'This is a critical audit and compliance field, especially for sponsored projects.', related: 'Use with Trans Type, Project, Proj Activity, and transaction dates.' }
+  emp_last_name:{label:'Employee Last Name',what:'The employee\'s last name.',interpret:'This is one of the primary identifiers used to recognize the employee tied to the payroll line.',why:'It helps users quickly find and validate the individual associated with the charge.',related:'Use with Employee First Name, EmplID, and UNI to confirm employee identity.'},
+  emp_first_name:{label:'Employee First Name',what:'The employee\'s first name.',interpret:'This works with the last name to identify the person tied to the payroll transaction.',why:'It helps distinguish employees with similar last names and supports accurate review.',related:'Use with Employee Last Name, EmplID, and UNI.'},
+  emplid:{label:'EmplID',what:'The employee\'s system-assigned employee ID.',interpret:'This is the formal HR/payroll identifier for the individual.',why:'This is often the most reliable employee identifier for research, reconciliation, and payroll follow-up.',related:'Use with UNI, Empl Rcd #, and employee name fields.'},
+  empl_rcd:{label:'Empl Rcd #',what:'The employee record number tied to the payroll charge.',interpret:'An employee can have more than one employment record in the system. This field tells you which job record the payroll line came from.',why:'It helps separate charges when one employee holds multiple roles or appointments.',related:'Use with EmplID, Pay Group, and Earn Code.'},
+  uni:{label:'UNI',what:'The employee\'s Columbia UNI.',interpret:'This is the employee\'s institutional login identifier.',why:'It is a familiar identifier for departments and is often easier to recognize than EmplID.',related:'Use with EmplID, Employee Last Name, and Employee First Name.'},
+  combo_code:{label:'Combo Code',what:'The Combo Code is the payroll distribution code representing the full ChartString used to charge payroll.',interpret:'Think of this as the payroll system\'s shortcut for the complete set of ChartFields behind the transaction.',why:'It shows how payroll was distributed financially and helps validate whether salary was charged to the correct funding setup.',related:'It ties to BU, Account, Department, Project, Proj Activity, Initiative, and Segment.'},
+  bu:{label:'BU',what:'The Business Unit where the payroll transaction is recorded.',interpret:'This identifies the top-level financial environment the payroll line belongs to.',why:'It confirms the transaction posted in the correct institutional ledger structure.',related:'Use with Fund, Department, and Project.'},
+  account:{label:'Account',what:'The natural account code describing the type of payroll-related transaction.',interpret:'This tells you what type of payroll expense is being recorded, such as salary, fringe, or GRA tuition.',why:'It is a core classification field because it defines what was actually charged.',related:'Use with Account Description, Period Salary, and the fringe columns.'},
+  account_desc:{label:'Account Description',what:'The readable description of the Account code.',interpret:'This explains the type of payroll charge in plain language.',why:'It helps users quickly understand whether the line is salary, fringe, or another payroll-related amount.',related:'Paired directly with Account.'},
+  department:{label:'Department',what:'The Department ChartField identifies the unit responsible for the payroll charge.',interpret:'This identifies the organizational owner of the transaction.',why:'It determines who is responsible for the expense and whose budget is affected.',related:'Use with Department Description, Project, and Fund.'},
+  dept_desc:{label:'Department Description',what:'The readable name of the department code.',interpret:'This translates the department code into the department\'s actual name.',why:'It makes the report easier to review and reduces coding confusion.',related:'Paired directly with Department.'},
+  project:{label:'Project',what:'The Project ChartField identifies the specific project or award receiving the payroll expense.',interpret:'This tells you which project is being charged.',why:'It is essential for project-level payroll review, especially for sponsored activity.',related:'Use with Project Description, Proj Activity, and Project Activity dates.'},
+  proj_desc:{label:'Project Description',what:'The readable title of the Project code.',interpret:'This explains the project in plain language.',why:'It helps confirm that payroll was charged to the intended project.',related:'Paired directly with Project.'},
+  proj_activity:{label:'Proj Activity',what:'Activity identifies the specific phase or workstream within the project.',interpret:'This narrows the charge to a specific project sub-scope.',why:'It provides a finer level of tracking within a project.',related:'Use with Project, Project Activity Start Date, and Project Activity End Date.'},
+  initiative:{label:'Initiative',what:'The Initiative ChartField reflects the broader school-wide purpose or operating classification of the activity.',interpret:'Think of Initiative as a strategic roll-up tag.',why:'It supports higher-level analysis across departments and projects.',related:'Use with Initiative Description and Segment.'},
+  initiative_desc:{label:'Initiative Description',what:'The readable explanation of the Initiative code.',interpret:'This tells you what the initiative tag means in plain language.',why:'It helps users understand why the payroll charge carries that classification.',related:'Paired directly with Initiative.'},
+  segment:{label:'Segment',what:'The Segment ChartField provides additional detail about who or what the activity is specifically associated with.',interpret:'This is a more granular tracking layer beneath department and project.',why:'It supports detailed reporting and classification.',related:'Use with Segment Description and Initiative.'},
+  segment_desc:{label:'Segment Description',what:'The readable description of the Segment code.',interpret:'This explains who or what the segment classification represents.',why:'It makes the Segment code interpretable without requiring knowledge of the code itself.',related:'Paired directly with Segment.'},
+  site:{label:'Site',what:'The site or location code associated with the payroll transaction, when applicable.',interpret:'This tells you whether the payroll charge is tied to a particular site or location.',why:'It supports location-based reporting where site matters operationally or financially.',related:'Use with Site Description and Department.'},
+  site_desc:{label:'Site Description',what:'The readable name of the Site code.',interpret:'This explains the site classification in plain language.',why:'It helps users understand the location context without needing to know the code itself.',related:'Paired directly with Site.'},
+  fund:{label:'Fund',what:'The fund source supporting the payroll expense.',interpret:'This tells you what type of money is paying for the payroll charge.',why:'This is one of the key compliance and budget fields because payroll must be charged to an appropriate funding source.',related:'Use with Project, Department, and Function.'},
+  function:{label:'Function',what:'The functional classification of the payroll expense.',interpret:'This tells you the broad institutional purpose supported by the payroll charge.',why:'It helps group payroll expenses for reporting by institutional function.',related:'Use with Function Description, Fund, and Department.'},
+  function_desc:{label:'Function Description',what:'The readable description of the Function code.',interpret:'This explains the function category in plain language.',why:'It makes functional classifications easier to understand during payroll review.',related:'Paired directly with Function.'},
+  pay_group:{label:'Pay Group',what:'The payroll grouping that determines how the employee is processed in payroll.',interpret:'This identifies the payroll cycle or employee payroll category the person belongs to.',why:'It helps explain payroll timing and processing rules.',related:'Use with Empl Rcd #, Earn Code, and transaction dates.'},
+  earn_code:{label:'Earn Code',what:'The payroll earnings code identifying the type of pay being charged.',interpret:'Start with the category first: regular pay, supplemental pay, student payments, allowances, or adjustments.',why:'Earn code is one of the most important payroll-detail fields because it explains the nature of the payment itself.',related:'Use with Pay Group, Transaction dates, Period Salary, and Trans Type.'},
+  trans_cd_type:{label:'Trans Type',what:'The transaction type identifying how the payroll line was processed.',interpret:'PY indicates a normal payroll posting. CT indicates a cost transfer or redistribution.',why:'It distinguishes standard payroll entries from adjustments that may require explanation.',related:'Use with Cost Transfer ID, Earn Code, and transaction dates.'},
+  trans_start_date:{label:'Transaction Start Date',what:'The beginning date of the payroll transaction or earning period.',interpret:'This shows when the payroll activity or pay period represented by the line began.',why:'It helps confirm the payroll charge belongs in the expected time period.',related:'Use with Transaction End Date and Earn Code.'},
+  trans_end_date:{label:'Transaction End Date',what:'The ending date of the payroll transaction or earning period.',interpret:'This shows when the payroll activity or pay period represented by the line ended.',why:'It helps confirm timing and supports retroactive payroll review.',related:'Use with Transaction Start Date, Pay Group, and Earn Code.'},
+  period_salary:{label:'Period Salary',what:'The salary amount charged for that payroll period or transaction line.',interpret:'This is the core salary amount before looking at fringe components.',why:'It is the main direct payroll expense shown on the report.',related:'Use with Reg Fringe, Addl Fringe, A1 Fringe, A2 Fringe, and GRA.'},
+  reg_fringe:{label:'Reg Fringe',what:'The regular fringe benefit amount charged on the payroll line.',interpret:'This represents the normal fringe cost associated with the salary charge.',why:'Fringe is a significant part of total payroll cost.',related:'Use with Period Salary and the other fringe columns.'},
+  addl_fringe:{label:'Addl Fringe',what:'Additional fringe benefit costs charged on the payroll line, when applicable.',interpret:'This reflects fringe costs beyond the regular fringe amount.',why:'It helps explain why the total payroll burden may be higher than salary plus regular fringe alone.',related:'Use with Reg Fringe, A1 Fringe, and A2 Fringe.'},
+  a1_fringe:{label:'A1 Fringe',what:'A fringe component recorded under the A1 fringe category.',interpret:'This is a specific fringe classification used in payroll costing.',why:'It provides more detailed visibility into how fringe expenses are broken out.',related:'Use with Reg Fringe, Addl Fringe, A2 Fringe, and Period Salary.'},
+  a2_fringe:{label:'A2 Fringe',what:'A fringe component recorded under the A2 fringe category.',interpret:'This is another specific fringe classification used in payroll costing.',why:'It adds detail to the full payroll burden.',related:'Use with Reg Fringe, Addl Fringe, A1 Fringe, and Period Salary.'},
+  gra:{label:'GRA',what:'The GRA column captures the Graduate Research Assistant tuition remission amount associated with the payroll line, when applicable.',interpret:'This column will be populated when the payroll line involves a graduate research assistant whose appointment includes tuition remission.',why:'GRA tuition remission is a significant and often overlooked component of the true cost of employing a graduate research assistant.',related:'Use with GRA-related account descriptions, Period Salary, and fringe to understand full cost.'},
+  proj_act_start:{label:'Project Activity Start Date',what:'The effective start date for the project activity tied to the payroll charge.',interpret:'This shows when that project activity became valid for charging.',why:'It helps confirm whether the payroll line was charged during the valid life of the activity.',related:'Use with Proj Activity, Project Activity End Date, and transaction dates.'},
+  proj_act_end:{label:'Project Activity End Date',what:'The effective end date for the project activity tied to the payroll charge.',interpret:'This shows when that project activity stops being valid for charging.',why:'It is important for identifying payroll lines that may have posted outside the intended activity window.',related:'Use with Proj Activity, Project Activity Start Date, and transaction dates.'},
+  cost_transfer_id:{label:'Cost Transfer ID',what:'The identifier associated with a payroll cost transfer, if the payroll charge was moved or adjusted after original posting.',interpret:'If populated, this signals that the payroll line may be tied to a redistribution or correction of salary expense.',why:'This is a critical audit and compliance field, especially for sponsored projects.',related:'Use with Trans Type, Project, Proj Activity, and transaction dates.'}
+};
+
+const ACCOUNT_DETAILS = {
+  '53300':{label:'53300 — Officer of Administration',definition:'Salary paid to officers of administration and similar staff positions.',interpret:'Use this when the payroll line represents regular staff salary rather than fringe or tuition.',why:'It distinguishes direct salary expense from all other payroll burden components.',naturalAccounts:[{code:'53300',desc:'OFFICER OF ADMINISTRATION',def:'Salary paid to officers of administration.'},{code:'53330',desc:'MANAGER/DEPT ADMINISTRATOR',def:'Salary paid to managers or department administrators.'},{code:'53350',desc:'ADMINISTRATIVE PROFESSIONAL',def:'Salary paid to administrative professionals.'}]},
+  '59010':{label:'59010 — Fringe Benefit Charge',definition:'Fringe benefit costs charged alongside salary expenses.',interpret:'This represents payroll burden rather than direct salary.',why:'It helps reviewers understand the full cost of compensation, not just wages.',naturalAccounts:[{code:'59010',desc:'FRINGE BENEFIT CHARGE',def:'Standard fringe benefit charge.'},{code:'59020',desc:'FRINGE ADDITIONAL',def:'Additional fringe-related charge.'},{code:'59050',desc:'FRINGE A1 FICA',def:'Specific fringe or FICA component.'}]},
+  '52810':{label:'52810 — GRA Tuition',definition:'Graduate research assistant tuition remission or tuition-related cost.',interpret:'This reflects tuition-related cost tied to a GRA appointment rather than normal salary.',why:'It captures a major cost component that can materially affect the total cost of a graduate appointment.',naturalAccounts:[{code:'52810',desc:'GRA TUITION',def:'Graduate research assistant tuition charge.'},{code:'52820',desc:'GRA (NO TUITION)',def:'Graduate research assistant salary without tuition.'},{code:'61151',desc:'GRA TUITION - DIRECT CHARGE',def:'Direct tuition-related charge for graduate research assistants.'}]}
 };
 
 const EARN_CODE_GUIDE = {
   categories: [
     { title: 'Regular and Time-Based Pay', note: 'Codes tied to regular salary or standard paid time.', codes: [
-      { code: 'REG', name: 'Regular Earnings', meaning: 'Employee’s normal base salary or wages.', note: 'Most common core pay code.' },
+      { code: 'REG', name: 'Regular Earnings', meaning: 'Employee\'s normal base salary or wages.', note: 'Most common core pay code.' },
       { code: 'OVT', name: 'Overtime', meaning: 'Premium pay for hours worked beyond the standard schedule.', note: 'Common for nonexempt staff.' },
       { code: 'HOL', name: 'Holiday Pay', meaning: 'Pay associated with an approved holiday.', note: 'Time-based earning.' },
       { code: 'SCK', name: 'Sick Pay', meaning: 'Pay for approved sick leave.', note: 'Time-off related.' },
@@ -399,7 +648,7 @@ const EARN_CODE_GUIDE = {
       { code: 'AAD', name: 'Additional Administrative Duties', meaning: 'Extra pay for taking on administrative duties beyond the main role, generally when the assignment is longer-term and pensionable.', note: 'Good example of structured add comp.' },
       { code: 'SAN', name: 'Supplemental Administrative Services - no pension', meaning: 'Extra pay for administrative work outside the main role that is non-pensionable.', note: 'Administrative add comp.' },
       { code: 'SAS', name: 'Supplemental Administrative Services', meaning: 'Extra pay for administrative work outside the main role that is typically pensionable when thresholds are met.', note: 'Pensionable counterpart to SAN.' },
-      { code: 'STS', name: 'Supplemental Teaching or Academic Services', meaning: 'Extra pay for teaching or academic work beyond the employee’s primary job.', note: 'Includes overload teaching.' },
+      { code: 'STS', name: 'Supplemental Teaching or Academic Services', meaning: 'Extra pay for teaching or academic work beyond the employee\'s primary job.', note: 'Includes overload teaching.' },
       { code: 'STN', name: 'Supplemental Teaching or Academic Services - no pension', meaning: 'Non-pensionable pay for teaching or academic work outside the primary role.', note: 'Non-pensionable counterpart to STS.' },
       { code: 'INT', name: 'Interim Pay', meaning: 'Temporary pay for officially serving in a higher-level role on an interim basis.', note: 'Useful leadership or interim example.' },
       { code: 'BNS', name: 'Bonus', meaning: 'Bonus paid in addition to regular salary.', note: 'Simple discretionary payment code.' },
@@ -434,7 +683,7 @@ const EARN_CODE_GUIDE = {
       { code: 'TEN', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Confirm with Payroll before use.' },
       { code: 'FCV', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Confirm with Payroll before use.' },
       { code: 'TUP', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Confirm with Payroll before use.' },
-      { code: 'STE', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Could fall under student or specialized handling.' },
+      { code: 'STE', name: 'Needs Payroll definition confirmation', meaning: 'Could fall under student or specialized handling.', note: 'Confirm with Payroll before use.' },
       { code: 'PCV', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Confirm with Payroll before use.' },
       { code: 'PDI', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Confirm with Payroll before use.' },
       { code: 'PEX', name: 'Needs Payroll definition confirmation', meaning: 'Specialized code requiring Payroll confirmation before staff training use.', note: 'Confirm with Payroll before use.' },
@@ -445,30 +694,9 @@ const EARN_CODE_GUIDE = {
   ]
 };
 
-const ACCOUNT_DETAILS = {
-  '53300': { label: '53300 — Officer of Administration', definition: 'Salary paid to officers of administration and similar staff positions.', interpret: 'Use this when the payroll line represents regular staff salary rather than fringe or tuition.', why: 'It distinguishes direct salary expense from all other payroll burden components.', naturalAccounts: [ { code: '53300', desc: 'OFFICER OF ADMINISTRATION', def: 'Salary paid to officers of administration.' }, { code: '53330', desc: 'MANAGER/DEPT ADMINISTRATOR', def: 'Salary paid to managers or department administrators.' }, { code: '53350', desc: 'ADMINISTRATIVE PROFESSIONAL', def: 'Salary paid to administrative professionals.' } ] },
-  '59010': { label: '59010 — Fringe Benefit Charge', definition: 'Fringe benefit costs charged alongside salary expenses.', interpret: 'This represents payroll burden rather than direct salary.', why: 'It helps reviewers understand the full cost of compensation, not just wages.', naturalAccounts: [ { code: '59010', desc: 'FRINGE BENEFIT CHARGE', def: 'Standard fringe benefit charge.' }, { code: '59020', desc: 'FRINGE ADDITIONAL', def: 'Additional fringe-related charge.' }, { code: '59050', desc: 'FRINGE A1 FICA', def: 'Specific fringe or FICA component.' } ] },
-  '52810': { label: '52810 — GRA Tuition', definition: 'Graduate research assistant tuition remission or tuition-related cost.', interpret: 'This reflects tuition-related cost tied to a GRA appointment rather than normal salary.', why: 'It captures a major cost component that can materially affect the total cost of a graduate appointment.', naturalAccounts: [ { code: '52810', desc: 'GRA TUITION', def: 'Graduate research assistant tuition charge.' }, { code: '52820', desc: 'GRA (NO TUITION)', def: 'Graduate research assistant salary without tuition.' }, { code: '61151', desc: 'GRA TUITION - DIRECT CHARGE', def: 'Direct tuition-related charge for graduate research assistants.' } ] }
-};
-
-let allInteractive = [];
-let tabIndex = -1;
-let activeEl = null;
-let activeToken = null;
-
-function buildTabList() {
-  allInteractive = [...Array.from(document.querySelectorAll('.clickable')), ...Array.from(document.querySelectorAll('.acct-desc-clickable'))];
-}
-
-function activateEl(el, token) {
-  if (activeEl) activeEl.classList.remove('active');
-  activeEl = el;
-  activeToken = token;
-  el.classList.add('active');
-  tabIndex = allInteractive.indexOf(el);
-  updateTabCounter();
-}
-
+let allInteractive=[], tabIndex=-1, activeEl=null, activeToken=null;
+function buildTabList(){ allInteractive=[...Array.from(document.querySelectorAll('.clickable')),...Array.from(document.querySelectorAll('.acct-desc-clickable'))]; }
+function activateEl(el,token){ if(activeEl) activeEl.classList.remove('active'); activeEl=el; activeToken=token; el.classList.add('active'); tabIndex=allInteractive.indexOf(el); updateTabCounter(); }
 function renderStandardPanel(data, key) {
   let extraHtml = '';
   if (key === 'earn_code') {
@@ -479,7 +707,7 @@ function renderStandardPanel(data, key) {
           <div class="earn-code-meaning">${item.meaning}</div>
           <div class="earn-code-note">${item.note}</div>
         </div>`).join('');
-      return `<details class="earn-category" ${index === 0 ? 'open' : ''}><summary>${category.title}</summary><div class="earn-category-body"><div class="earn-category-note">${category.note}</div><div class="earn-code-list">${codesHtml}</div></div></details>`;
+      return `<details class="earn-category"><summary>${category.title}</summary><div class="earn-category-body"><div class="earn-category-note">${category.note}</div><div class="earn-code-list">${codesHtml}</div></div></details>`;
     }).join('');
     extraHtml = `<div class="earn-guide"><div class="tip-badge">EARN CODE GUIDE</div>${categoryHtml}</div>`;
   }
@@ -491,94 +719,34 @@ function renderStandardPanel(data, key) {
     <div class="explain-section"><div class="tip-badge">RELATED FIELDS</div><div class="explain-section-body">${data.related}</div></div>
     ${extraHtml}`;
 }
-
-function renderAccountPanel(data) {
-  const list = (data.naturalAccounts || []).map(item => `<div class="na-row"><div class="na-code">${item.code}</div><div><div class="na-name">${item.desc}</div><div class="na-def">${item.def}</div></div></div>`).join('');
-  document.getElementById('explain-content').innerHTML = `
-    <div class="explain-field-name">${data.label}</div>
-    <div class="explain-section"><div class="tip-badge acct-badge">ACCOUNT DEFINITION</div><div class="explain-section-body">${data.definition}</div></div>
-    <div class="explain-section"><div class="tip-badge acct-badge">HOW TO INTERPRET</div><div class="explain-section-body">${data.interpret}</div></div>
-    <div class="explain-section"><div class="tip-badge acct-badge">WHY IT MATTERS</div><div class="explain-section-body">${data.why}</div></div>
-    <div class="nat-acct-list">${list}</div>`;
-}
-
-function showPanel() {
-  const panel = document.getElementById('explain-panel');
-  panel.classList.add('open');
-  document.getElementById('explain-inner').scrollTop = 0;
-}
-
-function closePanel() {
-  document.getElementById('explain-panel').classList.remove('open');
-  if (activeEl) activeEl.classList.remove('active');
-  activeEl = null;
-  activeToken = null;
-  tabIndex = -1;
-  updateTabCounter();
-}
-
-function openField(key, el) {
-  if (activeToken === `field:${key}`) { closePanel(); return; }
-  const data = EXPLANATIONS[key];
-  if (!data) return;
-  activateEl(el, `field:${key}`);
-  renderStandardPanel(data, key);
-  showPanel();
-}
-
-function openAccount(code, el) {
-  if (activeToken === `acct:${code}`) { closePanel(); return; }
-  const data = ACCOUNT_DETAILS[code];
-  if (!data) return;
-  activateEl(el, `acct:${code}`);
-  renderAccountPanel(data);
-  showPanel();
-}
-
-function updateTabCounter() {
-  const counter = document.getElementById('tab-counter');
-  if (tabIndex >= 0) {
-    counter.textContent = `Field ${tabIndex + 1} of ${allInteractive.length}`;
-    counter.classList.add('visible');
-  } else {
-    counter.classList.remove('visible');
-  }
-}
-
-document.querySelectorAll('.clickable').forEach(el => {
-  el.addEventListener('click', function(e) { e.stopPropagation(); openField(this.getAttribute('data-key'), this); });
-  el.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openField(this.getAttribute('data-key'), this); } });
-});
-
-document.querySelectorAll('.acct-desc-clickable').forEach(el => {
-  el.addEventListener('click', function(e) { e.stopPropagation(); openAccount(this.getAttribute('data-acct'), this); });
-  el.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAccount(this.getAttribute('data-acct'), this); } });
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closePanel(); return; }
-  if (e.key === 'Tab') {
-    const panelOpen = document.getElementById('explain-panel').classList.contains('open');
-    if (!panelOpen && tabIndex === -1) return;
+function renderAccountPanel(data){ const list=(data.naturalAccounts||[]).map(item=>`<div class="na-row"><div class="na-code">${item.code}</div><div><div class="na-name">${item.desc}</div><div class="na-def">${item.def}</div></div></div>`).join(''); document.getElementById('explain-content').innerHTML=`<div class="explain-field-name">${data.label}</div><div class="explain-section"><div class="tip-badge acct-badge">ACCOUNT DEFINITION</div><div class="explain-section-body">${data.definition}</div></div><div class="explain-section"><div class="tip-badge acct-badge">HOW TO INTERPRET</div><div class="explain-section-body">${data.interpret}</div></div><div class="explain-section"><div class="tip-badge acct-badge">WHY IT MATTERS</div><div class="explain-section-body">${data.why}</div></div><div class="nat-acct-list">${list}</div>`; }
+function showPanel(){ document.getElementById('explain-panel').classList.add('open'); document.getElementById('explain-inner').scrollTop=0; }
+function closePanel(){ document.getElementById('explain-panel').classList.remove('open'); if(activeEl) activeEl.classList.remove('active'); activeEl=null; activeToken=null; tabIndex=-1; updateTabCounter(); }
+function openField(key,el){ if(activeToken===`field:${key}`){closePanel();return;} const data=EXPLANATIONS[key]; if(!data) return; activateEl(el,`field:${key}`); renderStandardPanel(data,key); showPanel(); }
+function openAccount(code,el){ if(activeToken===`acct:${code}`){closePanel();return;} const data=ACCOUNT_DETAILS[code]; if(!data) return; activateEl(el,`acct:${code}`); renderAccountPanel(data); showPanel(); }
+function updateTabCounter(){ const c=document.getElementById('tab-counter'); if(tabIndex>=0){c.textContent=`Field ${tabIndex+1} of ${allInteractive.length}`;c.classList.add('visible');}else{c.classList.remove('visible');} }
+document.querySelectorAll('.clickable').forEach(el=>{el.addEventListener('click',function(e){e.stopPropagation();openField(this.getAttribute('data-key'),this);});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openField(this.getAttribute('data-key'),this);}});});
+document.querySelectorAll('.acct-desc-clickable').forEach(el=>{el.addEventListener('click',function(e){e.stopPropagation();openAccount(this.getAttribute('data-acct'),this);});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openAccount(this.getAttribute('data-acct'),this);}});});
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.key==='Escape'){ closePanel(); return; }
+  if(e.key==='ArrowUp')   { e.preventDefault(); if(!pillBarVisible) showPillBar(); return; }
+  if(e.key==='ArrowDown') { e.preventDefault(); if(pillBarVisible) hidePillBar(); return; }
+  if(e.key==='ArrowRight'){ e.preventDefault(); if(pillBarVisible) navigatePill(1); return; }
+  if(e.key==='ArrowLeft') { e.preventDefault(); if(pillBarVisible) navigatePill(-1); return; }
+  if(e.key==='Tab'){
+    const panelOpen=document.getElementById('explain-panel').classList.contains('open');
+    if(!panelOpen&&tabIndex===-1) return;
     e.preventDefault();
-    if (allInteractive.length === 0) return;
-    tabIndex = e.shiftKey ? (tabIndex <= 0 ? allInteractive.length - 1 : tabIndex - 1) : (tabIndex >= allInteractive.length - 1 ? 0 : tabIndex + 1);
-    const el = allInteractive[tabIndex];
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-    if (el.classList.contains('acct-desc-clickable')) {
-      openAccount(el.getAttribute('data-acct'), el);
-    } else {
-      openField(el.getAttribute('data-key'), el);
-    }
+    if(allInteractive.length===0) return;
+    tabIndex=e.shiftKey?(tabIndex<=0?allInteractive.length-1:tabIndex-1):(tabIndex>=allInteractive.length-1?0:tabIndex+1);
+    const el=allInteractive[tabIndex];
+    el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
+    if(el.classList.contains('acct-desc-clickable')){openAccount(el.getAttribute('data-acct'),el);}else{openField(el.getAttribute('data-key'),el);}
   }
 });
-
-const scrollArea = document.getElementById('table-scroll-area');
-const thead = document.getElementById('report-thead');
-scrollArea.addEventListener('scroll', function() {
-  thead.classList.toggle('scrolled-past', scrollArea.scrollTop > 0);
-});
-
+const thead=document.getElementById('report-thead');
+if(scrollArea) scrollArea.addEventListener('scroll',function(){thead.classList.toggle('scrolled-past',scrollArea.scrollTop>0);});
 buildTabList();
 </script>
 </body>
